@@ -16,7 +16,7 @@
 
     PrivateData = @{
         PSData = @{
-            Tags = @('Azure DevOps', 'GitHub', 'Pipelines', 'Actions', 'Workflows')
+            Tags = @('Azure', 'DevOps', 'GitHub', 'Pipelines', 'Actions', 'Workflows')
             ProjectUri = 'https://github.com/smokedlinq/powershell-devops'
         }
     }
