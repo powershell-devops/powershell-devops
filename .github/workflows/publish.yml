@@ -1,0 +1,15 @@
+name: publish
+
+on: [push]
+
+jobs:
+  publish:
+    name: Publish
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v1
+      - run: |
+          Publish-Module -Path .\ -NuGetApiKey $env:POWERSHELLGALLERY_KEY
+        shell: pwsh
+        env:
+          POWERSHELLGALLERY_KEY: ${{ secrets.POWERSHELLGALLERY_KEY }}
