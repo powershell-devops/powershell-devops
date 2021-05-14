@@ -39,7 +39,7 @@ function Set-EnvironmentVariable {
         if ($Output) { 
             Write-Host "::set-output name=$Name::$Value"
         } else {
-            Write-Host "$Name=$Value" | Out-File -FilePath $env:GITHUB_ENV -Append
+            "$Name=$Value" | Out-File -FilePath $env:GITHUB_ENV -Append
         }
     }
 
