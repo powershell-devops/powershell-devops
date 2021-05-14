@@ -1,6 +1,9 @@
 name: publish
 
-on: [push]
+on: 
+  push:
+    paths:
+      - powershell-devops.psd1
 
 jobs:
   publish:

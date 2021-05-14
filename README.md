@@ -12,6 +12,16 @@ set-env MY_VALUE 'Hello World!'
 
 *Note: `set-env` is an alias for `Set-EnvironmentVariable`.*
 
+## Get-EnvironmentVariable
+
+Gets the environment variable for the current process and optionally throws an error if it is not defined.
+
+```powershell
+get-env MY_ENV_VALUE -Require
+```
+
+*Note: `get-env` is an alias for `Get-EnvironmentVariable`.*
+
 ## Test-AdoPipeline
 
 Returns true if running in an Azure DevOps Pipeline, determined by the environment variable `TF_BUILD` having a value.
