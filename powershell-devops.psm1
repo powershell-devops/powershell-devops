@@ -22,21 +22,25 @@ function Set-EnvironmentVariable {
         [string] $Name,
 
         [Parameter(Mandatory, Position=1)]
-        [ValidateNotNullOrEmpty()]
         [string] $Value,
 
-        [switch] $Secret = $false
+        [switch] $Secret = $false,
+        [switch] $Output = $false
     )
 
     if (Test-AdoPipeline) {
-        Write-Host "##vso[task.setvariable variable=$Name;$($Secret ? 'issecret=true;' : '')]$Value"
+        Write-Host "##vso[task.setvariable variable=$Name;$($Secret ? 'issecret=true;' : '')$($Output ? 'isoutput=true;' : '')]$Value"
     }
 
     if (Test-GitHubWorkflow) {
         if ($Secret) {
             Write-Host "::add-mask::$Value"
         }
-        "$Name=$Value" | Out-File -FilePath $env:GITHUB_ENV -Append
+        if ($Output) { 
+            Write-Host "::set-output name=$Name::$Value"
+        } else {
+            Write-Host "$Name=$Value" | Out-File -FilePath $env:GITHUB_ENV -Append
+        }
     }
 
     Set-Item -Path env:$Name -Value $Value -Force
