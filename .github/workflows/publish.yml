@@ -2,6 +2,7 @@ name: publish
 
 on: 
   push:
+    branches: [ main ]
     paths:
       - powershell-devops.psd1
 
