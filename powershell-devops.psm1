@@ -1,4 +1,5 @@
 New-Alias -Name set-env -Value Set-EnvironmentVariable
+New-Alias -Name get-env -Value Get-EnvironmentVariable
 
 function Test-AdoPipeline {
     [OutputType([bool])]
@@ -44,4 +45,21 @@ function Set-EnvironmentVariable {
     }
 
     Set-Item -Path env:$Name -Value $Value -Force
+}
+
+function Get-EnvironmentVariable {
+    [CmdletBinding()]
+    param(
+        [Parameter(Mandatory, Position=0)]
+        [ValidateNotNullOrEmpty()]
+        [string] $Name,
+
+        [switch] $Require = $false
+    )
+
+    if (Test-Path -Path env:$Name -PathType Leaf) {
+        (Get-Item -Path env:$Name).Value
+    } elseif ($Require) {
+        throw "The environment variable '$Name' is missing or undefined."
+    }
 }
