@@ -21,8 +21,8 @@ function Set-EnvironmentVariable {
         [ValidateNotNullOrEmpty()]
         [string] $Name,
 
-        [Parameter(Mandatory, Position=1)]
-        [string] $Value,
+        [Parameter(Mandatory, Position=1, ValueFromPipeline)]
+        $Value,
 
         [switch] $Secret = $false,
         [switch] $Output = $false
