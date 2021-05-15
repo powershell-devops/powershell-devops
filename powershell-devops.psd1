@@ -1,5 +1,5 @@
 @{
-    ModuleVersion = '0.0.6'
+    ModuleVersion = '0.0.7'
     RootModule = 'powershell-devops.psm1'
     GUID = 'c1bdd96a-5c69-43f7-8155-9cd5f5a6019d'
     Author = 'https://github.com/smokedlinq'
@@ -9,7 +9,13 @@
         'Test-AdoPipeline',
         'Test-GitHubWorkflow',
         'Set-EnvironmentVariable',
-        'Get-EnvironmentVariable'
+        'Get-EnvironmentVariable',
+        'Write-Warning',
+        'Write-Verbose',
+        'Write-Debug',
+        'Enter-Group',
+        'Exit-Group',
+        'Add-Path'
     )
     AliasesToExport = @(
         'set-env',
@@ -23,4 +29,3 @@
         }
     }
 }
-

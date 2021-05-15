@@ -22,7 +22,81 @@ get-env MY_ENV_VALUE -Require
 
 *Note: `get-env` is an alias for `Get-EnvironmentVariable`.*
 
-## Test-AdoPipeline
+## Add-Path
+
+Prepends the value to the PATH environment.
+
+```powershell
+Add-Path $PSScriptRoot
+```
+
+## Enter-Group / Exit-Group
+
+Creates an expandable group in the log. Anything you print to the log between the `Enter-Group` and `Exit-Group` commands is nested inside an expandable entry in the log.
+
+```powershell
+Enter-Group 'My group'
+try {
+    # .. some other commands ...
+} finally {
+    Exit-Group
+}
+```
+
+## Enhanced behavior functions
+
+These functions enhance the behavior of existing cmdlets to operate more concisely in the DevOps environment.
+
+### Write-Warning
+
+Writes the message as a warning and optionally converts the input to JSON.
+
+```powershell
+@{
+    Target = 'Target'
+    Message = 'Message'
+} | Write-Warning -AsJson
+
+Write-Warning "Warning"
+```
+
+*Note: JSON objects are always compressed to fit on a single line.*
+
+### Write-Verbose
+
+Writes the message as verbose and optionally converts the input to JSON.
+
+```powershell
+@{
+    Target = 'Target'
+    Message = 'Message'
+} | Write-Verbose -AsJson
+
+Write-Verbose "Verbose"
+```
+
+*Note: JSON objects are always compressed to fit on a single line.*
+
+### Write-Debug
+
+Writes the message as debug and optionally converts the input to JSON.
+
+```powershell
+@{
+    Target = 'Target'
+    Message = 'Message'
+} | Write-Debug -AsJson
+
+Write-Debug "Debug"
+```
+
+*Note: JSON objects are always compressed to fit on a single line.*
+
+## Utility functions
+
+These functions are helper functions that are used by the module but could also be useful within your script.
+
+### Test-AdoPipeline
 
 Returns true if running in an Azure DevOps Pipeline, determined by the environment variable `TF_BUILD` having a value.
 
@@ -30,7 +104,7 @@ Returns true if running in an Azure DevOps Pipeline, determined by the environme
 Test-AdoPipeline
 ```
 
-## Test-GitHubWorkflow
+### Test-GitHubWorkflow
 
 Returns true if running in a GitHub Workflow, determined by the environment variable `GITHUB_ACTIONS` having a value.
 

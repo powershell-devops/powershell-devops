@@ -31,9 +31,7 @@ function Set-EnvironmentVariable {
 
     if (Test-AdoPipeline) {
         Write-Host "##vso[task.setvariable variable=$Name;$($Secret ? 'issecret=true;' : '')$($Output ? 'isoutput=true;' : '')]$Value"
-    }
-
-    if (Test-GitHubWorkflow) {
+    } elseif (Test-GitHubWorkflow) {
         if ($Secret) {
             Write-Host "::add-mask::$Value"
         }
@@ -185,4 +183,47 @@ function Write-Debug {
             }
         }
     }
+}
+
+function Enter-Group {
+    [CmdletBinding()]
+    param (
+        [Parameter(Mandatory, Position=0)]
+        [ValidateNotNullOrEmpty()]
+        [string] $Name
+    )
+
+    if (Test-AdoPipeline) {
+        Write-Host "##[group]$Name"
+    } elseif (Test-GitHubWorkflow) {
+        Write-Host "::group::$Name"
+    }
+}
+
+function Exit-Group {
+    [CmdletBinding()]
+    param ()
+    
+    if (Test-AdoPipeline) {
+        Write-Host '##[endgroup]'
+    } elseif (Test-GitHubWorkflow) {
+        Write-Host '::endgroup::'
+    }   
+}
+
+function Add-Path {
+    [CmdletBinding()]
+    param (
+        [Parameter(Mandatory, Position=0)]
+        [ValidateNotNullOrEmpty()]
+        [string] $Path
+    )
+    
+    if (Test-AdoPipeline) {
+        Write-Host "##vso[task.prependpath]$Path"
+    } elseif (Test-GitHubWorkflow) {
+        $Path >> $env:GITHUB_PATH
+    }
+
+    $env:PATH = "$Path;$env:PATH"
 }
