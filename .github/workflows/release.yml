@@ -12,6 +12,7 @@ defaults:
     shell: pwsh
 
 env:
+  RELEASE_ID: ${{ github.event.release.id }}
   TAG_NAME: ${{ github.event.release.tag_name }}
   POWERSHELLGALLERY_KEY: ${{ secrets.POWERSHELLGALLERY_KEY }}
 
@@ -21,13 +22,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - name: Verify module version
-        run: |
-          $Version = $env:TAG_NAME -replace '^v'
-          $Manifest = Test-ModuleManifest .\powershell-devops.psd1
-          if ($Version -ne $Manifest.Version) {
-            throw "The module version '$($Manifest.Version)' does not match the release version '$Version'."
-          }
+
+      - uses: smokedlinq/powershell-devops@v0
+
+      - id: verify
+        name: Verify module version
+        run: ./.github/workflows/scripts/verify.ps1
 
   publish:
     if: ${{ github.event.action == 'published' }}
@@ -36,19 +36,17 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
+      - uses: smokedlinq/powershell-devops@v0
+
       - name: Publish to PowerShellGallery
-        run: |
-          $Version = $env:TAG_NAME -replace '^v'
-          if (Find-Module powershell-devops -RequiredVersion $Version -ErrorAction SilentlyContinue) {
-            Write-Host "Relisting version: $Version"
-            Invoke-RestMethod `
-              https://www.powershellgallery.com/api/v2/package/powershell-devops/$Version `
-              -Method POST `
-              -Headers @{'X-NuGet-ApiKey' = $env:POWERSHELLGALLERY_KEY}
-          } else {
-            Write-Host "Publishing version: $Version"
-            Publish-Module -Path .\ -NuGetApiKey $env:POWERSHELLGALLERY_KEY
-          }
+        run: ./.github/workflows/scripts/publish.ps1
+
+      - name: Update major version tag
+        uses: richardsimko/update-tag@v1
+        with:
+          tag_name: ${{ env.MAJOR_TAG_NAME }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   unlist:
     if: ${{ github.event.action == 'unpublished' || github.event.action == 'deleted' }}
@@ -57,10 +55,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      - run: |
-          $Version = $env:TAG_NAME -replace '^v'
-          Write-Host "Unlisting version: $Version"
-          Invoke-RestMethod `
-            https://www.powershellgallery.com/api/v2/package/powershell-devops/$Version `
-            -Method DELETE `
-            -Headers @{'X-NuGet-ApiKey' = $env:POWERSHELLGALLERY_KEY}
+      - uses: smokedlinq/powershell-devops@v0
+
+      - name: Unlist from PowerShellGallery
+        run: ./.github/workflows/scripts/unlist.ps1
