@@ -1,0 +1,62 @@
+name: release
+
+on:
+  release:
+    types:
+    - published
+    - unpublished
+
+defaults:
+  run:
+    shell: pwsh
+
+env:
+  TAG_NAME: ${{ github.event.release.tag_name }}
+  POWERSHELLGALLERY_KEY: ${{ secrets.POWERSHELLGALLERY_KEY }}
+
+jobs:
+  preflight:
+    if: ${{ github.event.action == 'published' }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Verify module version
+        run: |
+          $Manifest = Test-ModuleManifest .\powershell-devops.psd1
+          if ($env:TAG_NAME -ne $Manifest.Version) {
+            throw "The module version '$($Manifest.Version)' does not match the release version '$env:TAG_NAME'."
+          }
+
+  publish:
+    if: ${{ github.event.action == 'published' }}
+    needs: preflight
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Publish to PowerShellGallery
+        run: |
+          if (Find-Module powershell-devops -RequiredVersion $env:TAG_NAME -ErrorAction SilentlyContinue) {
+            Write-Host "Relisting version: $env:TAG_NAME"
+            Invoke-RestMethod `
+              https://www.powershellgallery.com/api/v2/package/powershell-devops/$env:TAG_NAME `
+              -Method POST `
+              -Headers @{'X-NuGet-ApiKey' = $env:POWERSHELLGALLERY_KEY}
+          } else {
+            Write-Host "Publishing version: $env:TAG_NAME"
+            Publish-Module -Path .\ -NuGetApiKey $env:POWERSHELLGALLERY_KEY
+          }
+
+  unpublish:
+    if: ${{ github.event.action == 'unpublished' }}
+    needs: preflight
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      - run: |
+          Write-Host "Unlisting version: $env:TAG_NAME"
+          Invoke-RestMethod `
+            https://www.powershellgallery.com/api/v2/package/powershell-devops/$env:TAG_NAME `
+            -Method DELETE `
+            -Headers @{'X-NuGet-ApiKey' = $env:POWERSHELLGALLERY_KEY}
