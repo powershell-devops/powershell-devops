@@ -3,7 +3,7 @@
 
 Describe 'powershell-devops.psm1' {
     BeforeAll {
-        Import-Module $PSCommandPath.Replace('.Tests.ps1','.psm1')
+        Import-Module $PSCommandPath.Replace('.tests.ps1','.psm1')
         $env:TF_BUILD=$null
         $env:GITHUB_ACTIONS=$null
     }
