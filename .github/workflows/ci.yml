@@ -9,7 +9,9 @@ on:
       - action.yml
       - README.md
       - LICENSE
+      - CODEOWNERS
       - .vscode/*
+      - .github/workflows/release.yml
 
 defaults:
   run:
