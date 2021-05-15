@@ -22,9 +22,10 @@ jobs:
       - uses: actions/checkout@v2
       - name: Verify module version
         run: |
+          $Version = $env:TAG_NAME -replace '^v'
           $Manifest = Test-ModuleManifest .\powershell-devops.psd1
-          if ($env:TAG_NAME -ne $Manifest.Version) {
-            throw "The module version '$($Manifest.Version)' does not match the release version '$env:TAG_NAME'."
+          if ($Version -ne $Manifest.Version) {
+            throw "The module version '$($Manifest.Version)' does not match the release version '$Version'."
           }
 
   publish:
@@ -36,14 +37,15 @@ jobs:
 
       - name: Publish to PowerShellGallery
         run: |
-          if (Find-Module powershell-devops -RequiredVersion $env:TAG_NAME -ErrorAction SilentlyContinue) {
-            Write-Host "Relisting version: $env:TAG_NAME"
+          $Version = $env:TAG_NAME -replace '^v'
+          if (Find-Module powershell-devops -RequiredVersion $Version -ErrorAction SilentlyContinue) {
+            Write-Host "Relisting version: $Version"
             Invoke-RestMethod `
-              https://www.powershellgallery.com/api/v2/package/powershell-devops/$env:TAG_NAME `
+              https://www.powershellgallery.com/api/v2/package/powershell-devops/$Version `
               -Method POST `
               -Headers @{'X-NuGet-ApiKey' = $env:POWERSHELLGALLERY_KEY}
           } else {
-            Write-Host "Publishing version: $env:TAG_NAME"
+            Write-Host "Publishing version: $Version"
             Publish-Module -Path .\ -NuGetApiKey $env:POWERSHELLGALLERY_KEY
           }
 
@@ -55,8 +57,9 @@ jobs:
       - uses: actions/checkout@v2
 
       - run: |
-          Write-Host "Unlisting version: $env:TAG_NAME"
+          $Version = $env:TAG_NAME -replace '^v'
+          Write-Host "Unlisting version: $Version"
           Invoke-RestMethod `
-            https://www.powershellgallery.com/api/v2/package/powershell-devops/$env:TAG_NAME `
+            https://www.powershellgallery.com/api/v2/package/powershell-devops/$Version `
             -Method DELETE `
             -Headers @{'X-NuGet-ApiKey' = $env:POWERSHELLGALLERY_KEY}
