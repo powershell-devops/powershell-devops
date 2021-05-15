@@ -20,11 +20,6 @@ jobs:
   preflight:
     runs-on: ubuntu-latest
     steps:
-      - name: Dump GitHub context
-        env:
-          GITHUB_CONTEXT: ${{ toJSON(github) }}
-        run: $env:GITHUB_CONTEXT
-
       - uses: actions/checkout@v2
 
       - uses: smokedlinq/powershell-devops@v0
