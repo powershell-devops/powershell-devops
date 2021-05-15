@@ -1,0 +1,27 @@
+name: CI
+
+on:
+  pull_request:
+    branches: [ main ]
+  push:
+    branches: [ main ]
+    paths-ignore:
+      - README.md
+      - LICENSE
+      - .vscode/*
+
+defaults:
+  run:
+    shell: pwsh
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v1
+
+      - name: Install pre-requisites
+        run: Install-Module Pester -MinimumVersion 5.2.0 -Force
+
+      - name: Pester tests
+        run: Invoke-Pester -Output Detailed
