@@ -1,0 +1,38 @@
+name: Install powershell-devops Module
+description: Installs the powershell-devops module from the PowerShell Gallery
+author: smokedlinq
+branding:
+  icon: play
+  color: green
+inputs:
+  required-version:
+    description: 'Optional required version to install. If not provided, will install the latest version. Example: 0.0.7'
+  minimum-version:
+    description: 'Optional minimum version to install. If not provided, will install the latest version. Example: 0.0.7'
+  maximum-version:
+    description: 'Opptional maximum version to install. If not provided, will install the latest version. Example: 0.0.7'
+runs:
+  using: composite
+  steps:
+    - shell: pwsh
+      env:
+        # https://github.com/actions/runner/issues/665
+        INPUT_REQUIRED_VERSION: ${{ inputs.required-version }}
+        INPUT_MINIMUM_VERSION: ${{ inputs.minimum-version }}
+        INPUT_MAXIMUM_VERSION: ${{ inputs.maximum-version }}
+      run: |
+        if ($env:INPUT_REQUIRED_VERSION) {
+          Install-Module powershell-devops -RequiredVersion $env:INPUT_REQUIRED_VERSION -Force
+        } else {
+          $InstallModuleParameters = @{}
+
+          if ($env:INPUT_MINIMUM_VERSION) {
+            $InstallModuleParameters.MinimumVersion = $env:INPUT_MINIMUM_VERSION
+          }
+
+          if ($env:INPUT_MINIMUM_VERSION) {
+            $InstallModuleParameters.MaximumVersion = $env:INPUT_MAXIMUM_VERSION
+          }
+
+          Install-Module powershell-devops -Force @InstallModuleParameters
+        }
