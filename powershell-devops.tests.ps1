@@ -12,26 +12,34 @@ Describe 'powershell-devops.psm1' {
         $env:ENV_VARIABLE=$null
     }
 
-    It 'when TF_BUILD is not defined Test-AdoPipeline should return false' {
-        Test-AdoPipeline | Should -Be $false
+    Context 'Test-AdoPipeline' {
+        It 'when TF_BUILD is not defined should return false' {
+            Test-AdoPipeline | Should -Be $false
+        }
     }
 
-    It 'when GITHUB_ACTIONS is not defined Test-GitHubWorkflow should return false' {
-        Test-GitHubWorkflow | Should -Be $false
+    Context 'Test-GitHubWorkflow' {
+        It 'when GITHUB_ACTIONS is not defined should return false' {
+            Test-GitHubWorkflow | Should -Be $false
+        }
     }
 
-    It 'when Set-EnvironmentVariable then the environment variable should be set' {
-        Set-EnvironmentVariable ENV_VARIABLE VALUE
-        $env:ENV_VARIABLE | Should -Be VALUE
+    Context 'Set-EnvironmentVariable' {
+        It 'when Set-EnvironmentVariable then the environment variable should be set' {
+            Set-EnvironmentVariable ENV_VARIABLE VALUE
+            $env:ENV_VARIABLE | Should -Be VALUE
+        }
     }
 
-    It 'when an environment variable is defined and Get-EnvironmentVariable then the value should be returned' {
-        $env:ENV_VARIABLE = 'VALUE'
-        Get-EnvironmentVariable ENV_VARIABLE | Should -Be VALUE
-    }
+    Context 'Get-EnvironmentVariable' {
+        It 'when an environment variable is defined then the value should be returned' {
+            $env:ENV_VARIABLE = 'VALUE'
+            Get-EnvironmentVariable ENV_VARIABLE | Should -Be VALUE
+        }
 
-    It 'when an environment variable not defined and Get-EnvironmentVariable with Require then should throw' {
-        { Get-EnvironmentVariable ENV_VARIABLE -Require } | Should -Throw
+        It 'when an environment variable not defined and -Require is true then should throw' {
+            { Get-EnvironmentVariable ENV_VARIABLE -Require } | Should -Throw
+        }
     }
 
     Context 'Azure DevOps' {
@@ -43,32 +51,42 @@ Describe 'powershell-devops.psm1' {
             $env:TF_BUILD=$null
         }
 
-        It 'when TF_BUILD is defined Test-AdoPipeline should return true' {
-            Test-AdoPipeline | Should -Be $true
+        Context 'Test-AdoPipeline' {
+            It 'when TF_BUILD is defined should return true' {
+                Test-AdoPipeline | Should -Be $true
+            }
         }
 
-        It 'when Set-EnvironmentVariable then the host should write command ##vso[task.setvariable]' {
-            Set-EnvironmentVariable ENV_VARIABLE VALUE *>&1 | Should -BeLike '##vso`[task.setvariable *'
+        Context 'Set-EnvironmentVariable' {
+            It 'should write command ##vso[task.setvariable]' {
+                Set-EnvironmentVariable ENV_VARIABLE VALUE *>&1 | Should -BeLike '##vso`[task.setvariable *'
+            }
+
+            It 'with -Secret then should write command ##vso[task.setvariable issecret=true`]' {
+                Set-EnvironmentVariable ENV_VARIABLE VALUE -Secret *>&1 | Should -BeLike '##vso`[task.setvariable *;issecret=true;*'
+            }
+
+            It 'with -Output then should write command ##vso[task.setvariable isoutput=true`]' {
+                Set-EnvironmentVariable ENV_VARIABLE VALUE -Output *>&1 | Should -BeLike '##vso`[task.setvariable *;isoutput=true;*'
+            }
         }
 
-        It 'when Set-EnvironmentVariable with Secret then the host should write command ##vso[task.setvariable issecret=true`]' {
-            Set-EnvironmentVariable ENV_VARIABLE VALUE -Secret *>&1 | Should -BeLike '##vso`[task.setvariable *;issecret=true;*'
+        Context 'Enter-Group' {
+            It 'should write command ##[group]' {
+                Enter-Group GROUP *>&1 | Should -BeLike '##`[group`]*'
+            }
         }
 
-        It 'when Set-EnvironmentVariable with Output then the host should write command ##vso[task.setvariable isoutput=true`]' {
-            Set-EnvironmentVariable ENV_VARIABLE VALUE -Output *>&1 | Should -BeLike '##vso`[task.setvariable *;isoutput=true;*'
+        Context 'Exit-Group' {
+            It 'should write command ##[endgroup]' {
+                Exit-Group *>&1 | Should -BeLike '##`[endgroup`]*'
+            }
         }
 
-        It 'when Enter-Group then the host should write command ##[group]' {
-            Enter-Group GROUP *>&1 | Should -BeLike '##`[group`]*'
-        }
-
-        It 'when Exit-Group then the host should write command ##[endgroup]' {
-            Exit-Group *>&1 | Should -BeLike '##`[endgroup`]*'
-        }
-
-        It 'when Add-Path then the host should write command ##vso[task.prependpath]' {
-            Add-Path /path *>&1 | Should -BeLike '##vso`[task.prependpath`]*'
+        Context 'Add-Path' {
+            It 'should write command ##vso[task.prependpath]' {
+                Add-Path /path *>&1 | Should -BeLike '##vso`[task.prependpath`]*'
+            }
         }
     }
 
@@ -85,34 +103,44 @@ Describe 'powershell-devops.psm1' {
             Remove-Item -Path $env:GITHUB_PATH -Force
         }
 
-        It 'when GITHUB_ACTIONS is defined Test-GitHubWorkflow should return true' {
-            Test-GitHubWorkflow | Should -Be $true
+        Context 'Test-GitHubWorkflow' {
+            It 'when GITHUB_ACTIONS is defined should return true' {
+                Test-GitHubWorkflow | Should -Be $true
+            }
         }
 
-        It 'when Set-EnvironmentVariable then the host should put ENV_VARIABLE in GITHUB_ENV' {
-            Set-EnvironmentVariable ENV_VARIABLE VALUE
-            Get-Content -Path $env:GITHUB_ENV | Should -BeLike 'ENV_VARIABLE=*'
+        Context 'Set-EnvironmentVariable' {
+            It 'should put name=value in GITHUB_ENV' {
+                Set-EnvironmentVariable ENV_VARIABLE VALUE
+                Get-Content -Path $env:GITHUB_ENV | Should -BeLike 'ENV_VARIABLE=*'
+            }
+
+            It 'with -Secret then should write command ::add-mask::' {
+                Set-EnvironmentVariable ENV_VARIABLE VALUE -Secret *>&1 | Should -BeLike '::add-mask::*'
+            }
+
+            It 'with -Output then should write command ::set-output name=' {
+                Set-EnvironmentVariable ENV_VARIABLE VALUE -Output *>&1 | Should -BeLike '::set-output name=*'
+            }
         }
 
-        It 'when Set-EnvironmentVariable with Secret then the host should write command ::add-mask::' {
-            Set-EnvironmentVariable ENV_VARIABLE VALUE -Secret *>&1 | Should -BeLike '::add-mask::*'
+        Context 'Enter-Group' {
+            It 'should write command ::group::' {
+                Enter-Group GROUP *>&1 | Should -BeLike '::group::*'
+            }
         }
 
-        It 'when Set-EnvironmentVariable with Output then the host should write command ::set-output name=' {
-            Set-EnvironmentVariable ENV_VARIABLE VALUE -Output *>&1 | Should -BeLike '::set-output name=*'
+        Context 'Exit-Group' {
+            It 'should write command ::endgroup::' {
+                Exit-Group *>&1 | Should -BeLike '::endgroup::*'
+            }
         }
 
-        It 'when Enter-Group then the host should write command ::group::' {
-            Enter-Group GROUP *>&1 | Should -BeLike '::group::*'
-        }
-
-        It 'when Exit-Group then the host should write command ::endgroup::' {
-            Exit-Group *>&1 | Should -BeLike '::endgroup::*'
-        }
-
-        It 'when Add-Path then the host should put PATH in GITHUB_PATH' {
-            Add-Path /path
-            Get-Content -Path $env:GITHUB_PATH | Should -Be '/path'
+        Context 'Add-Path' {
+            It 'should put value in GITHUB_PATH' {
+                Add-Path /path
+                Get-Content -Path $env:GITHUB_PATH | Should -Be '/path'
+            }
         }
     }
 }
