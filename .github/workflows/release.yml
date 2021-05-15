@@ -41,6 +41,7 @@ jobs:
         run: ./.github/workflows/scripts/publish.ps1
 
       - name: Update major version tag
+        if: ${{ env.MAJOR_TAG_NAME != '' }}
         uses: richardsimko/update-tag@v1
         with:
           tag_name: ${{ env.MAJOR_TAG_NAME }}
