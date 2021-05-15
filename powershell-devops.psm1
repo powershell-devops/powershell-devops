@@ -63,3 +63,126 @@ function Get-EnvironmentVariable {
         throw "The environment variable '$Name' is missing or undefined."
     }
 }
+
+function Write-Warning {
+    [CmdletBinding(DefaultParameterSetName='Default')]
+    param(
+        [Parameter(Mandatory, Position=0, ValueFromPipeline, ParameterSetName='Default')]
+        [Parameter(Mandatory, Position=0, ValueFromPipeline, ParameterSetName='AsJson')]
+        $Message,
+
+        [Parameter(ParameterSetName='AsJson')]
+        [switch] $AsJson = $false,
+
+        [Parameter(ParameterSetName='AsJson')]
+        [ValidateRange(1, 100)]
+        [int] $Depth = 4,
+
+        [Parameter(ParameterSetName='AsJson')]
+        [switch] $AsArray = $false,
+
+        [Parameter(ParameterSetName='AsJson')]
+        [switch] $EnumAsStrings = $false,
+
+        [Parameter(ParameterSetName='AsJson')]
+        [Newtonsoft.Json.StringEscapeHandling] $EscapeHandling = [Newtonsoft.Json.StringEscapeHandling]::Default
+    )
+
+    process {
+        if ($WarningPreference -ne 'SilentlyContinue') {
+            if ($AsJson) {
+                $Message = $Message | ConvertTo-Json -Depth $Depth -Compress -AsArray:$AsArray -EnumsAsStrings:$EnumAsStrings -EscapeHandling $EscapeHandling
+            }
+
+            if (Test-AdoPipeline) {
+                Write-Host "##[warning]$Message"
+            } elseif (Test-GitHubWorkflow) {
+                Write-Host "::warning::$Message"
+            } else {
+                Microsoft.PowerShell.Utility\Write-Warning -Message $Message
+            }
+        }
+    }
+}
+
+function Write-Verbose {
+    [CmdletBinding(DefaultParameterSetName='Default')]
+    param(
+        [Parameter(Mandatory, Position=0, ValueFromPipeline, ParameterSetName='Default')]
+        [Parameter(Mandatory, Position=0, ValueFromPipeline, ParameterSetName='AsJson')]
+        $Message,
+
+        [Parameter(ParameterSetName='AsJson')]
+        [switch] $AsJson = $false,
+
+        [Parameter(ParameterSetName='AsJson')]
+        [ValidateRange(1, 100)]
+        [int] $Depth = 4,
+
+        [Parameter(ParameterSetName='AsJson')]
+        [switch] $AsArray = $false,
+
+        [Parameter(ParameterSetName='AsJson')]
+        [switch] $EnumAsStrings = $false,
+
+        [Parameter(ParameterSetName='AsJson')]
+        [Newtonsoft.Json.StringEscapeHandling] $EscapeHandling = [Newtonsoft.Json.StringEscapeHandling]::Default
+    )
+
+    process {
+        if ($VerbosePreference -ne 'SilentlyContinue') {
+            if ($AsJson) {
+                $Message = $Message | ConvertTo-Json -Depth $Depth -Compress -AsArray:$AsArray -EnumsAsStrings:$EnumAsStrings -EscapeHandling $EscapeHandling
+            }
+
+            if (Test-AdoPipeline) {
+                Write-Host "##[debug]$Message"
+            } elseif (Test-GitHubWorkflow) {
+                Write-Host "::debug::$Message"
+            } else {
+                Microsoft.PowerShell.Utility\Write-Verbose -Message $Message
+            }
+        }
+    }
+}
+
+function Write-Debug {
+    [CmdletBinding(DefaultParameterSetName='Default')]
+    param(
+        [Parameter(Mandatory, Position=0, ValueFromPipeline, ParameterSetName='Default')]
+        [Parameter(Mandatory, Position=0, ValueFromPipeline, ParameterSetName='AsJson')]
+        $Message,
+
+        [Parameter(ParameterSetName='AsJson')]
+        [switch] $AsJson = $false,
+
+        [Parameter(ParameterSetName='AsJson')]
+        [ValidateRange(1, 100)]
+        [int] $Depth = 4,
+
+        [Parameter(ParameterSetName='AsJson')]
+        [switch] $AsArray = $false,
+
+        [Parameter(ParameterSetName='AsJson')]
+        [switch] $EnumAsStrings = $false,
+
+        [Parameter(ParameterSetName='AsJson')]
+        [Newtonsoft.Json.StringEscapeHandling] $EscapeHandling = [Newtonsoft.Json.StringEscapeHandling]::Default
+    )
+
+    process {
+        if ($DebugPreference -ne 'SilentlyContinue') {
+            if ($AsJson) {
+                $Message = $Message | ConvertTo-Json -Depth $Depth -Compress -AsArray:$AsArray -EnumsAsStrings:$EnumAsStrings -EscapeHandling $EscapeHandling
+            }
+
+            if (Test-AdoPipeline) {
+                Write-Host "##[debug]$Message"
+            } elseif (Test-GitHubWorkflow) {
+                Write-Host "::debug::$Message"
+            } else {
+                Microsoft.PowerShell.Utility\Write-Debug -Message $Message
+            }
+        }
+    }
+}
