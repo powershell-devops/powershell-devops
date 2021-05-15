@@ -13,14 +13,14 @@ Basic:
 
 ```yml
 steps:
-- uses: smokedlinq/powershell-devops@v1
+- uses: smokedlinq/powershell-devops@v0
 ```
 
 Specific version:
 
 ```yml
 steps:
-- uses: smokedlinq/powershell-devops@v1
+- uses: smokedlinq/powershell-devops@v0
   with:
     required-version: 0.0.7
 ```
@@ -29,7 +29,7 @@ Minimum version:
 
 ```yml
 steps:
-- uses: smokedlinq/powershell-devops@v1
+- uses: smokedlinq/powershell-devops@v0
   with:
     minimum-version: 0.0.7
 ```
@@ -38,7 +38,7 @@ Maximum version:
 
 ```yml
 steps:
-- uses: smokedlinq/powershell-devops@v1
+- uses: smokedlinq/powershell-devops@v0
   with:
     maximum-version: 0.0.7
 ```

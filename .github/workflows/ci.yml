@@ -4,6 +4,7 @@ on:
   push:
     branches: [ main ]
     paths-ignore:
+      - action.yml
       - README.md
       - LICENSE
       - .vscode/*
