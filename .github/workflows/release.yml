@@ -24,6 +24,14 @@ jobs:
 
       - uses: smokedlinq/powershell-devops@v0
 
+      - name: Install pre-requisites
+        run: Install-Module Pester -MinimumVersion 5.2.0 -Force
+
+      # Require the pester tests work to be able to publish a version
+      - name: Pester tests
+        if: ${{ github.event.action == 'published' }}
+        run: Invoke-Pester -Output Detailed
+
       - id: verify
         name: Verify module version
         run: ./.github/workflows/scripts/verify.ps1
