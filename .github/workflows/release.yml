@@ -5,6 +5,7 @@ on:
     types:
     - published
     - unpublished
+    - deleted
 
 defaults:
   run:
@@ -49,8 +50,8 @@ jobs:
             Publish-Module -Path .\ -NuGetApiKey $env:POWERSHELLGALLERY_KEY
           }
 
-  unpublish:
-    if: ${{ github.event.action == 'unpublished' }}
+  unlist:
+    if: ${{ github.event.action == 'unpublished' || github.event.action == 'deleted' }}
     needs: preflight
     runs-on: ubuntu-latest
     steps:
