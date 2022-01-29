@@ -86,55 +86,6 @@ try {
 }
 ```
 
-### Enhanced PowerShell commands
-
-These functions enhance the behavior of existing cmdlets to operate more concisely in the DevOps environment.
-
-#### Write-Warning
-
-Writes the message as a warning and optionally converts the input to JSON.
-
-```powershell
-@{
-    Target = 'Target'
-    Message = 'Message'
-} | Write-Warning -AsJson
-
-Write-Warning "Warning"
-```
-
-*Note: JSON objects are always compressed to fit on a single line.*
-
-#### Write-Verbose
-
-Writes the message as verbose and optionally converts the input to JSON.
-
-```powershell
-@{
-    Target = 'Target'
-    Message = 'Message'
-} | Write-Verbose -AsJson
-
-Write-Verbose "Verbose"
-```
-
-*Note: JSON objects are always compressed to fit on a single line.*
-
-#### Write-Debug
-
-Writes the message as debug and optionally converts the input to JSON.
-
-```powershell
-@{
-    Target = 'Target'
-    Message = 'Message'
-} | Write-Debug -AsJson
-
-Write-Debug "Debug"
-```
-
-*Note: JSON objects are always compressed to fit on a single line.*
-
 ### Utility functions
 
 These functions are helper functions that are used by the module but could also be useful within your script.

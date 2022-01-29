@@ -7,10 +7,13 @@ branding:
 inputs:
   required-version:
     description: 'Optional required version to install. If not provided, will install the latest version. Example: 0.0.7'
+    required: false
   minimum-version:
     description: 'Optional minimum version to install. If not provided, will install the latest version. Example: 0.0.7'
+    required: false
   maximum-version:
     description: 'Opptional maximum version to install. If not provided, will install the latest version. Example: 0.0.7'
+    required: false
 runs:
   using: composite
   steps:

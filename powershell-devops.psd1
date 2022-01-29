@@ -10,9 +10,6 @@
         'Test-GitHubWorkflow',
         'Set-EnvironmentVariable',
         'Get-EnvironmentVariable',
-        'Write-Warning',
-        'Write-Verbose',
-        'Write-Debug',
         'Enter-Group',
         'Exit-Group',
         'Add-Path'
