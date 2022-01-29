@@ -12,7 +12,7 @@ inputs:
     description: 'Optional minimum version to install. If not provided, will install the latest version. Example: 0.0.7'
     required: false
   maximum-version:
-    description: 'Opptional maximum version to install. If not provided, will install the latest version. Example: 0.0.7'
+    description: 'Optional maximum version to install. If not provided, will install the latest version. Example: 0.0.7'
     required: false
 runs:
   using: composite
@@ -37,5 +37,5 @@ runs:
             $InstallModuleParameters.MaximumVersion = $env:INPUT_MAXIMUM_VERSION
           }
 
-          Install-Module powershell-devops -Force @InstallModuleParameters
+          Install-Module powershell-devops -Force -AllowClobber @InstallModuleParameters
         }
