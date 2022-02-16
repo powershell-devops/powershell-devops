@@ -34,7 +34,7 @@ runs:
             $InstallModuleParameters.MinimumVersion = $env:INPUT_MINIMUM_VERSION
           }
 
-          if ($env:INPUT_MINIMUM_VERSION) {
+          if ($env:INPUT_MAXIMUM_VERSION) {
             $InstallModuleParameters.MaximumVersion = $env:INPUT_MAXIMUM_VERSION
           }
 
