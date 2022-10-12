@@ -94,12 +94,14 @@ Describe 'powershell-devops.psm1' {
         BeforeEach {
             $env:GITHUB_ACTIONS=1
             $env:GITHUB_ENV = [System.IO.Path]::GetTempFileName()
+            $env:GITHUB_OUTPUT = [System.IO.Path]::GetTempFileName()
             $env:GITHUB_PATH = [System.IO.Path]::GetTempFileName()
         }
 
         AfterEach {
             $env:GITHUB_ACTIONS=$null
             Remove-Item -Path $env:GITHUB_ENV -Force
+            Remove-Item -Path $env:GITHUB_OUTPUT -Force
             Remove-Item -Path $env:GITHUB_PATH -Force
         }
 
@@ -119,8 +121,9 @@ Describe 'powershell-devops.psm1' {
                 Set-EnvironmentVariable ENV_VARIABLE VALUE -Secret *>&1 | Should -BeLike '::add-mask::*'
             }
 
-            It 'with -Output then should write command ::set-output name=' {
-                Set-EnvironmentVariable ENV_VARIABLE VALUE -Output *>&1 | Should -BeLike '::set-output name=*'
+            It 'with -Output then should put name=value in GITHUB_OUTPUT' {
+                Set-EnvironmentVariable ENV_VARIABLE VALUE -Output
+                Get-Content -Path $env:GITHUB_OUTPUT | Should -BeLike 'ENV_VARIABLE=*'
             }
         }
 

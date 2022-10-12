@@ -36,7 +36,7 @@ function Set-EnvironmentVariable {
             Write-Host "::add-mask::$Value"
         }
         if ($Output) { 
-            Write-Host "::set-output name=$Name::$Value"
+            "$Name=$Value" | Out-File -FilePath $env:GITHUB_OUTPUT -Append
         } else {
             "$Name=$Value" | Out-File -FilePath $env:GITHUB_ENV -Append
         }
