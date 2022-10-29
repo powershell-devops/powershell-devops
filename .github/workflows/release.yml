@@ -22,7 +22,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      - uses: smokedlinq/powershell-devops@v0
+      - uses: powershell-devops/install-module@v1
 
       - name: Install pre-requisites
         run: Install-Module Pester -MinimumVersion 5.2.0 -Force
@@ -43,7 +43,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      - uses: smokedlinq/powershell-devops@v0
+      - uses: powershell-devops/install-module@v1
 
       - name: Publish to PowerShellGallery
         run: ./.github/workflows/scripts/publish.ps1
@@ -63,7 +63,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      - uses: smokedlinq/powershell-devops@v0
+      - uses: powershell-devops/install-module@v0
 
       - name: Unlist from PowerShellGallery
         run: ./.github/workflows/scripts/unlist.ps1
