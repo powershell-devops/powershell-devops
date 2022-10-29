@@ -19,6 +19,7 @@ env:
 jobs:
   preflight:
     runs-on: ubuntu-latest
+    if: ${{ github.event.action != 'unpublished' && github.event.action != 'deleted' }}
     steps:
       - uses: actions/checkout@v2
 
