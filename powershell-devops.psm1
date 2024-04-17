@@ -37,9 +37,8 @@ function Set-EnvironmentVariable {
         }
         if ($Output) { 
             "$Name=$Value" | Out-File -FilePath $env:GITHUB_OUTPUT -Append
-        } else {
-            "$Name=$Value" | Out-File -FilePath $env:GITHUB_ENV -Append
         }
+        "$Name=$Value" | Out-File -FilePath $env:GITHUB_ENV -Append
     }
 
     Set-Item -Path env:$Name -Value $Value -Force
